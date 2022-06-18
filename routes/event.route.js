@@ -53,12 +53,15 @@ router.post("/", async function (req, res) {
         startDate: req.body.startDate,
         endDate: req.body.endDate,
         products: req.body.products,
+        reduction: req.body.reduction,
+        type: req.body.type,
+        msg: req.body.msg,
     };
     //product.push(newProduit);
 
-    await event.create(newEvent);
+    const theEvent = await event.create(newEvent);
 
-    return res.send(newEvent);
+    return res.send(theEvent);
 });
 
 //trouver l'evenement souhaite
@@ -123,6 +126,9 @@ router.put("/:id", async function (req, res) {
             startDate: new Date(req.body.startDate).toLocaleDateString(),
             endDate: new Date(req.body.endDate).toLocaleDateString(),
             products: req.body.products,
+            reduction: req.body.reduction,
+            type: req.body.type,
+            msg: req.body.msg,
         },
         { new: true },
         (err, doc) => {

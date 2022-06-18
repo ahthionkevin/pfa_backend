@@ -58,14 +58,18 @@ router.put("/:id", async (req, res) => {
 
         if (result.error) return res.status(400).json(result.error);
 
-        const updatedProduct = await Product.findByIdAndUpdate(
+        Product.findByIdAndUpdate(
             req.params.id,
             {
                 $set: result,
             },
-            { new: true }
+            { new: true },
+            (err, doc) => {
+                console.log(doc);
+                if (err) return res.status(500).json(err);
+                return res.status(200).json(doc);
+            }
         );
-        res.status(200).json(updatedProduct);
     } catch (err) {
         res.status(500).json(err);
     }

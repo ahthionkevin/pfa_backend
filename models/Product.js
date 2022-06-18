@@ -10,7 +10,10 @@ const validateProduct = async (product) => {
         size: Joi.string().optional(),
         color: Joi.string().optional(),
         price: Joi.number().min(0).default(0).required(),
+        reduction: Joi.number().min(0).max(100).default(0).required(),
+        reducePrice: Joi.number().min(0).optional(),
         isComposite: Joi.boolean().required(),
+        expiration: Joi.date().required(),
         components: Joi.array()
             .items(
                 Joi.object({
@@ -58,6 +61,17 @@ const ProductSchema = new mongoose.Schema(
         color: { type: String },
         price: { type: Number, required: true },
         isComposite: { type: Boolean, default: false },
+        expiration: { type: Date, required: true },
+        reduction: {
+            type: Number,
+            required: true,
+            default: 0,
+            min: 0,
+            max: 100,
+        },
+        reducePrice: {
+            type: Number,
+        },
         components: {
             // type: Array,
             type: [ComponentSchema],
@@ -81,6 +95,11 @@ const ProductSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+ProductSchema.pre("save", function (next) {
+    this.reducePrice = this.price - (this.price * this.reduction) / 100;
+    next();
+});
 
 module.exports.validate = validateProduct;
 module.exports.Product = mongoose.model("products", ProductSchema);
